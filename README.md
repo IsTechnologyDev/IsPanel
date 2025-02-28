@@ -17,15 +17,16 @@
 在运行之前，请确保已安装以下 Python 库：
 
 ```bash
-pip install flask psutil GPUtil
+pip install flask psutil GPUtil\
+```
 运行应用
 克隆或下载项目代码。
 
 在项目目录下运行以下命令启动应用：
 
-bash
-复制
+```bash
 python app.py
+```
 打开浏览器，访问 http://<你的IP地址>:80 即可使用控制面板。
 
 文件结构
@@ -57,12 +58,7 @@ README.md：项目说明文件。
 文件管理功能仅支持浏览，不支持文件上传、下载或删除。
 
 许可证
-本项目采用 MIT 许可证。详情请参阅 LICENSE 文件。
+本项目采用 GNU Affero General Public License (AGPL) 许可证。详情请参阅 LICENSE 文件。
 
 贡献
 欢迎提交 Issue 和 Pull Request 来帮助改进该项目。
-
-作者
-IsTechnology - GitHub
-
-感谢使用远程控制面板！如有任何问题或建议，请随时联系。
