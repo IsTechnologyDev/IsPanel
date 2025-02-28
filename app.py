@@ -8,8 +8,8 @@ import GPUtil
 import os
 
 Port = 80
-Build = 200
-Version = "2.0.0"
+Build = 201
+Version = "2.0.1"
 app = Flask(__name__, template_folder='Assets')
 pc_name = socket.gethostname()
 info = "Version : " + Version + " Build : " + str(Build)
