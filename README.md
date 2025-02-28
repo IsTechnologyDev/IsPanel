@@ -17,7 +17,7 @@
 在运行之前，请确保已安装以下 Python 库：
 
 ```bash
-pip install flask psutil GPUtil\
+pip install flask psutil GPUtil
 ```
 运行应用
 克隆或下载项目代码。
