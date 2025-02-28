@@ -1,1 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ pc_name }}的控制面板</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #000000;
+            display: flex;
+            height: 100vh;
+            color: #ffffff;
+        }
 
+        .sidebar {
+            width: 250px;
+            background-color: #1e1e1e;
+            padding: 20px;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar h1 {
+            font-size: 24px;
+            color: #ffffff;
+            margin-bottom: 20px;
+        }
+
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar li {
+            padding: 10px;
+            margin: 5px 0;
+            color: #cccccc;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .sidebar li:hover {
+            background-color: #333333;
+        }
+
+        .file-path {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: #cccccc;
+            margin-bottom: 20px;
+        }
+
+        .file-path span {
+            margin: 0 5px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            background-color: #121212;
+            box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .main-content h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .main-content input {
+            width: 60%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #666666;
+            border-radius: 4px;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            font-size: 16px;
+        }
+
+        .button-container {
+            width: 60%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .button-container button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #DCDCDC;
+            color: #666666;
+            font-size: 16px;
+            cursor: not-allowed;
+            transition: background-color 0.3s ease;
+        }
+
+        .button-container button.enabled {
+            background-color: #00FF00;
+            color: #000000;
+            cursor: pointer;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #666666;
+            border-radius: 20px;
+            transition: 0.3s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: #ffffff;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        input:checked + .slider {
+            background-color: #00FF00;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+
+        .safe-mode-text {
+            font-size: 14px;
+            color: #cccccc;
+        }
+
+        .output {
+            width: 60%;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #1e1e1e;
+            border: 1px solid #666666;
+            border-radius: 4px;
+            color: #ffffff;
+            font-family: monospace;
+            white-space: pre-wrap;
+            overflow-y: scroll;
+            max-height: 300px;
+            text-align: left;
+            display: none;
+        }
+
+        .output.safe-mode {
+            color: #FF0000;
+            text-align: center;
+        }
+
+        .button-container button:hover:not(.enabled)::after {
+            content: "请输入命令";
+            position: absolute;
+            background-color: #333333;
+            color: #ffffff;
+            padding: 5px;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .button-container button.enabled:hover::after {
+            content: "点击执行命令";
+            position: absolute;
+            background-color: #333333;
+            color: #ffffff;
+            padding: 5px;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h1>控制面板</h1>
+        <div class="file-path">
+            {{ pc_name }} <span> > 系统控制</span>
+        </div>
+        <ul>
+            <li onclick="window.location.href='/'">系统控制</li>
+            <li onclick="window.location.href='/settings'">系统设置</li>
+            <li onclick="window.location.href='/files'">文件管理</li>
+            <br>
+            <br>
+            <li onclick="toggleOutput()">清空回显</li>
+            <br>
+            <br>
+            <p>{{ info }}</p>
+            <a href="https://github.com/IsTechnologyDev">IsTechnology的Github</a>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <h1>系统控制</h1>
+        <input type="text" id="commandInput" placeholder="请输入命令">
+        <div class="button-container">
+            <button id="executeButton" disabled>执行</button>
+            <label class="switch">
+                <input type="checkbox" id="safeModeSwitch">
+                <span class="slider"></span>
+            </label>
+            <span class="safe-mode-text">安全模式</span>
+        </div>
+        <pre class="output" id="output"></pre>
+    </div>
+
+    <script>
+        const input = document.getElementById('commandInput');
+        const button = document.getElementById('executeButton');
+        const safeModeSwitch = document.getElementById('safeModeSwitch');
+        const output = document.getElementById('output');
+
+        safeModeSwitch.addEventListener('change', function () {
+            if (safeModeSwitch.checked) {
+                output.textContent = "!!!打开安全模式后不再有回显,执行的命令会直接显示在屏幕!!!";
+                output.classList.add('safe-mode');
+                output.style.display = "block";
+            } else {
+                output.textContent = "";
+                output.classList.remove('safe-mode');
+                output.style.display = "none";
+            }
+        });
+
+        input.addEventListener('input', function () {
+            if (input.value.trim() === "") {
+                button.disabled = true;
+                button.classList.remove('enabled');
+            } else {
+                button.disabled = false;
+                button.classList.add('enabled');
+            }
+        });
+
+        button.addEventListener('click', function () {
+            if (input.value.trim() !== "") {
+                const safeMode = safeModeSwitch.checked;
+
+                fetch('/execute', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        command: input.value.trim(),
+                        safe_mode: safeMode,
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        if (safeMode) {
+                            output.textContent = "!!!打开安全模式后不再有回显,执行的命令会直接显示在屏幕!!!";
+                            output.classList.add('safe-mode');
+                        } else {
+                            output.textContent = data.output;
+                            output.classList.remove('safe-mode');
+                        }
+                        output.style.display = "block";
+                    } else {
+                        output.textContent = `错误: ${data.output}`;
+                        output.classList.remove('safe-mode');
+                        output.style.display = "block";
+                    }
+                })
+                .catch(error => {
+                    output.textContent = `请求失败: ${error.message}`;
+                    output.classList.remove('safe-mode');
+                    output.style.display = "block";
+                });
+            }
+        });
+
+        function toggleOutput() {
+            if (output.style.display === "none") {
+                output.style.display = "block";
+            } else {
+                output.textContent = "";
+                output.style.display = "none";
+            }
+        }
+
+        output.style.display = "none";
+    </script>
+</body>
+</html>
